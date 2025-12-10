@@ -1,4 +1,8 @@
 import "./App.css";
+import {useState} from "react";
+import TodoForm from "./TodoForm";
+import TodoList from "./TodoList";
+
 
 function App() {
   const todos = [
@@ -7,14 +11,14 @@ function App() {
     { id: 3, title: "code out app" },
   ];
 
+  const [newTodo, setNewTodo] = useState("Todo list Items")
+
   return (
     <div>
       <h1>My Todos</h1>
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>{todo.title}</li>
-        ))}
-      </ul>
+      <TodoForm />
+      <p>{newTodo}</p>
+      <TodoList todos={todos} />
     </div>
   );
 }
