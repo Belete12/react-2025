@@ -5,11 +5,13 @@ import TodoList from "./TodoList";
 
 
 function App() {
-  const todos = [
-    { id: 1, title: "review resources" },
-    { id: 2, title: "take notes" },
-    { id: 3, title: "code out app" },
-  ];
+
+  //No hardcoded
+  // const todos = [
+  //   { id: 1, title: "review resources" },
+  //   { id: 2, title: "take notes" },
+  //   { id: 3, title: "code out app" },
+  // ];
 
   //const [newTodo, setNewTodo] = useState("Todo list Items")
   const [todoList, setTodoList] = useState([]);
@@ -26,7 +28,8 @@ setTodoList([...todoList, newTodo])
     <div>
       <h1>My Todos</h1>
       <TodoForm  onAddTodo={addTodo}/>
-      <TodoList todos={todos} />
+      <TodoList todoList={todoList}/>
+
     </div>
   );
 }
