@@ -17,7 +17,6 @@ const handleAddTodo = (event) => {
         <form onSubmit={handleAddTodo}>
       <label> 
         Todo:
-        {/* In the input element, add a ref props that takes the todoTitleInput. */}
         <input type="text" name="title" ref={todoTitleInput} />
       </label>
         <button type="submit"> Add Todo</button>
