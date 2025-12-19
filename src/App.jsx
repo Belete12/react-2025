@@ -11,13 +11,21 @@ function App() {
     { id: 3, title: "code out app" },
   ];
 
-  const [newTodo, setNewTodo] = useState("Todo list Items")
+  //const [newTodo, setNewTodo] = useState("Todo list Items")
+  const [todoList, setTodoList] = useState([]);
 
+const addTodo = (title) => {
+  const newTodo = {
+    title : title,
+    id: Date.now(),
+  };
+setTodoList([...todoList, newTodo])
+
+}
   return (
     <div>
       <h1>My Todos</h1>
-      <TodoForm />
-      <p>{newTodo}</p>
+      <TodoForm  onAddTodo={addTodo}/>
       <TodoList todos={todos} />
     </div>
   );
