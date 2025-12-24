@@ -1,11 +1,17 @@
 import TodoListItem from "./TodoListItem"
 
-function TodoList({todoList}){
+function TodoList({ todoList }) {
 
-    return(
-        <ul>
-            {todoList.map(todo => <TodoListItem key={todo.id} todo={todo} />)}
-        </ul>
+    return (
+        todoList.length === 0 
+        ? <p>Add todo above to get started</p>
+        : (
+            <ul>
+                {todoList.map(todo => (
+                    <TodoListItem key={todo.id} todo={todo} />
+                ))}
+            </ul>
+        )
     )
 }
 
