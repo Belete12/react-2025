@@ -9,7 +9,7 @@ function App() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isSaving, setIsSaving] = useState(false); // Saving new todo
+  const [isSaving, setIsSaving] = useState(false);
 
   const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
@@ -103,18 +103,55 @@ function App() {
     }
   };
 
-  const completeTodo = (id) => {
-    const updatedTodos = todoList.map((todo) => {
-      if (todo.id === id) {
-        return { ...todo, isCompleted: true };
-      }
-      return todo;
-    });
+  const completeTodo = async (id) => {
+    const originalTodo = todoList.find((todo) => todo.id === id);
+    const completedTodo = { ...originalTodo, isCompleted: true };
+
+    const updatedTodos = todoList.map((todo) =>
+      todo.id === id ? completedTodo : todo
+    );
     setTodoList(updatedTodos);
+
+    const payload = {
+      records: [
+        {
+          id: completedTodo.id,
+          fields: {
+            title: completedTodo.title,
+            isCompleted: completedTodo.isCompleted,
+          },
+        },
+      ],
+    };
+
+    const options = {
+      method: 'PATCH',
+      headers: {
+        Authorization: token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    try {
+      const resp = await fetch(url, options);
+      if (!resp.ok) {
+        throw new Error(resp.message);
+      }
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(`${error.message}. Reverting todo...`);
+
+      const revertedTodos = todoList.map((todo) =>
+        todo.id === originalTodo.id ? originalTodo : todo
+      );
+      setTodoList([...revertedTodos]);
+    }
   };
 
   const updateTodo = async (editedTodo) => {
     const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
+
     const payload = {
       records: [
         {
@@ -132,11 +169,13 @@ function App() {
       headers: { Authorization: token, 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     };
+
     try {
       const updatedTodos = todoList.map((todo) =>
         todo.id === editedTodo.id ? editedTodo : todo
       );
       setTodoList(updatedTodos);
+
       const resp = await fetch(url, options);
       if (!resp.ok) {
         throw new Error(resp.message);
@@ -144,6 +183,7 @@ function App() {
     } catch (error) {
       console.error(error);
       setErrorMessage(`${error.message}. Reverting todo...`);
+
       const revertedTodos = todoList.map((todo) =>
         todo.id === originalTodo.id ? originalTodo : todo
       );
@@ -175,16 +215,6 @@ function App() {
           </button>
         </div>
       )}
-
-      {/* {errorMessage && (
-        <div className={styles.errorMessageContainer}>
-          <hr />
-          <p>{errorMessage || 'No errors yet.'}</p>
-          <button onClick={() => setErrorMessage('')}>
-            Dismiss Error Message
-          </button>
-        </div>
-      )} */}
     </div>
   );
 }
