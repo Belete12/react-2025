@@ -6,9 +6,16 @@ import TodoList from './features/TodoList/TodoList';
 import TodosViewForm from './features/TodosViewForm';
 
 //Define a function encodeUrl above the App function definition:
-const encodeUrl = ({ sortField, sortDirection, url }) => {
+//Update encodeUrl utility function
+const encodeUrl = ({ sortField, sortDirection, queryString, url }) => {
   let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-  return encodeURI(`${url}?${sortQuery}`);
+  let searchQuery = '';
+
+  if (queryString) {
+    searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+  }
+
+  return encodeURI(`${url}?${sortQuery}${searchQuery}`);
 };
 
 function App() {
@@ -24,6 +31,9 @@ function App() {
   const [sortField, setSortField] = useState('createdTime');
   const [sortDirection, setSortDirection] = useState('desc');
 
+  //create the state value (and update function) for queryString with an empty string for an initial value.
+  const [queryString, setQueryString] = useState('');
+
   useEffect(() => {
     const fetchTodos = async () => {
       setIsLoading(true);
@@ -37,7 +47,7 @@ function App() {
 
       try {
         const resp = await fetch(
-          encodeUrl({ sortField, sortDirection, url }),
+          encodeUrl({ sortField, sortDirection, queryString, url }),
           options
         );
 
@@ -64,7 +74,7 @@ function App() {
     };
 
     fetchTodos();
-  }, [sortField, sortDirection, url, token]);
+  }, [sortField, sortDirection, queryString, url, token]);
 
   const addTodo = async (newTodo) => {
     const payload = {
@@ -228,7 +238,16 @@ function App() {
         isLoading={isLoading}
       />
       <hr />
-      <TodosViewForm />
+
+      <TodosViewForm
+        sortField={sortField}
+        setSortField={setSortField}
+        sortDirection={sortDirection}
+        setSortDirection={setSortDirection}
+        queryString={queryString}
+        setQueryString={setQueryString}
+      />
+
       {errorMessage && (
         <div>
           <hr />
