@@ -1,28 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TextInputWithLabel from '../../shared/TextInputWithLabel';
 
 function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
   const [isEditing, setIsEditing] = useState(false);
   const [workingTitle, setWorkingTitle] = useState(todo.title);
 
-  //Create a handleCancel event helper
+  useEffect(() => {
+    setWorkingTitle(todo.title);
+  }, [todo]);
+
   const handleCancel = () => {
     setWorkingTitle(todo.title);
     setIsEditing(false);
   };
-  //Create a handleEdit event helper
 
   const handleEdit = (event) => {
     setWorkingTitle(event.target.value);
   };
 
-  //Create handleUpdate helper
   const handleUpdate = (event) => {
     if (!isEditing) return;
     event.preventDefault();
     onUpdateTodo({ ...todo, title: workingTitle });
     setIsEditing(false);
   };
+
   return (
     <li>
       <form onSubmit={handleUpdate}>
