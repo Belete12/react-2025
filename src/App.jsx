@@ -1,5 +1,5 @@
 import './App.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import TodoForm from './features/TodoForm';
 import TodoList from './features/TodoList/TodoList';
@@ -7,16 +7,16 @@ import TodosViewForm from './features/TodosViewForm';
 
 //Define a function encodeUrl above the App function definition:
 //Update encodeUrl utility function
-const encodeUrl = ({ sortField, sortDirection, queryString, url }) => {
-  let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-  let searchQuery = '';
+// const encodeUrl = ({ sortField, sortDirection, queryString, url }) => {
+//   let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
+//   let searchQuery = '';
 
-  if (queryString) {
-    searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
-  }
+//   if (queryString) {
+//     searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+//   }
 
-  return encodeURI(`${url}?${sortQuery}${searchQuery}`);
-};
+//   return encodeURI(`${url}?${sortQuery}${searchQuery}`);
+// };
 
 function App() {
   const [todoList, setTodoList] = useState([]);
@@ -33,6 +33,17 @@ function App() {
 
   //create the state value (and update function) for queryString with an empty string for an initial value.
   const [queryString, setQueryString] = useState('');
+  //Define an empty arrow function that takes no arguments in the useCallback
+  const encodeUrl = useCallback(() => {
+    let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
+    let searchQuery = '';
+
+    if (queryString) {
+      searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+    }
+
+    return encodeURI(`${url}?${sortQuery}${searchQuery}`);
+  }, [sortField, sortDirection, queryString, url]);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -47,7 +58,8 @@ function App() {
 
       try {
         const resp = await fetch(
-          encodeUrl({ sortField, sortDirection, queryString, url }),
+          //encodeUrl({ sortField, sortDirection, queryString, url }),
+          encodeUrl(),
           options
         );
 
@@ -74,7 +86,8 @@ function App() {
     };
 
     fetchTodos();
-  }, [sortField, sortDirection, queryString, url, token]);
+  }, [encodeUrl, token]);
+  //[sortField, sortDirection, queryString, url, token]);
 
   const addTodo = async (newTodo) => {
     const payload = {
@@ -101,7 +114,8 @@ function App() {
       setIsSaving(true);
 
       const resp = await fetch(
-        encodeUrl({ sortField, sortDirection, url }),
+        //encodeUrl({ sortField, sortDirection, url }),
+        encodeUrl(),
         options
       );
 
@@ -161,7 +175,8 @@ function App() {
 
     try {
       const resp = await fetch(
-        encodeUrl({ sortField, sortDirection, url }),
+        //encodeUrl({ sortField, sortDirection, url }),
+        encodeUrl(),
         options
       );
       if (!resp.ok) {
@@ -206,7 +221,8 @@ function App() {
       setTodoList(updatedTodos);
 
       const resp = await fetch(
-        encodeUrl({ sortField, sortDirection, url }),
+        //encodeUrl({ sortField, sortDirection, url }),
+        encodeUrl(),
         options
       );
       if (!resp.ok) {
