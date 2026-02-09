@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'react';
 
+import styled from 'styled-components';
+
+const StyledForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+`;
+
 function TodosViewForm({
   sortField,
   setSortField,
@@ -23,7 +32,7 @@ function TodosViewForm({
   }, [localQueryString, setQueryString]);
 
   return (
-    <form onSubmit={preventRefresh}>
+    <StyledForm onSubmit={preventRefresh}>
       <div>
         <label>
           search to do:
@@ -62,7 +71,7 @@ function TodosViewForm({
           </select>
         </label>
       </div>
-    </form>
+    </StyledForm>
   );
 }
 

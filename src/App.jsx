@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import TodoForm from './features/TodoForm';
 import TodoList from './features/TodoList/TodoList';
 import TodosViewForm from './features/TodosViewForm';
+import styles from './App.module.css';
 
 //Define a function encodeUrl above the App function definition:
 //Update encodeUrl utility function
@@ -242,37 +243,43 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>My Todos</h1>
+    <div className={styles.appContainer}>
+      <div className={styles.appContent}>
+        {/* <h1>My Todos</h1> */}
+        <h1>
+          <span style={{ fontSize: '3rem', marginRight: '5px' }}>📒</span>
+          My Todos
+        </h1>
 
-      <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
+        <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
 
-      <TodoList
-        todoList={todoList}
-        onCompleteTodo={completeTodo}
-        onUpdateTodo={updateTodo}
-        isLoading={isLoading}
-      />
-      <hr />
+        <TodoList
+          todoList={todoList}
+          onCompleteTodo={completeTodo}
+          onUpdateTodo={updateTodo}
+          isLoading={isLoading}
+        />
+        <hr />
 
-      <TodosViewForm
-        sortField={sortField}
-        setSortField={setSortField}
-        sortDirection={sortDirection}
-        setSortDirection={setSortDirection}
-        queryString={queryString}
-        setQueryString={setQueryString}
-      />
+        <TodosViewForm
+          sortField={sortField}
+          setSortField={setSortField}
+          sortDirection={sortDirection}
+          setSortDirection={setSortDirection}
+          queryString={queryString}
+          setQueryString={setQueryString}
+        />
 
-      {errorMessage && (
-        <div>
-          <hr />
-          <p>{errorMessage}</p>
-          <button onClick={() => setErrorMessage('')}>
-            Dismiss Error Message
-          </button>
-        </div>
-      )}
+        {errorMessage && (
+          <div className={styles.errorBox}>
+            <hr />
+            <p>{errorMessage}</p>
+            <button onClick={() => setErrorMessage('')}>
+              Dismiss Error Message
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
