@@ -92,9 +92,7 @@ function reducer(state = initialState, action) {
         isSaving: false,
       };
 
-    //make sure that the revertTodo case is written directly above updateTodo and remove the return statement.
     case actions.revertTodo:
-    // no return
     case actions.updateTodo: {
       const updatedTodos = state.todoList.map((todo) =>
         todo.id === action.editedTodo.id ? action.editedTodo : todo
@@ -131,7 +129,6 @@ function reducer(state = initialState, action) {
         errorMessage: '',
       };
 
-    // add
     case actions.setSortDirection:
       return {
         ...state,
