@@ -1,10 +1,12 @@
 import './App.css';
-import { useEffect, useCallback, useReducer } from 'react';
-
-import TodoForm from './features/TodoForm';
-import TodoList from './features/TodoList/TodoList';
-import TodosViewForm from './features/TodosViewForm';
+import { useEffect, useCallback, useReducer, useState } from 'react';
 import styles from './App.module.css';
+import TodosPage from './pages/TodosPage';
+import Header from './shared/Header';
+import { useLocation, Routes, Route } from 'react-router-dom';
+
+import About from './pages/About';
+import NotFound from './pages/NotFound';
 
 import {
   reducer as todosReducer,
@@ -36,7 +38,6 @@ function App() {
 
   useEffect(() => {
     const fetchTodos = async () => {
-      // setIsLoading(true)
       dispatch({ type: todoActions.fetchTodos });
       const options = { method: 'GET', headers: { Authorization: token } };
       try {
@@ -77,7 +78,6 @@ function App() {
     };
 
     try {
-      //setIsSaving(true);
       dispatch({ type: todoActions.startRequest });
       const resp = await fetch(encodeUrl(), options);
 
@@ -98,7 +98,6 @@ function App() {
         error,
       });
     } finally {
-      //setIsSaving(false);
       dispatch({ type: todoActions.endRequest });
     }
   };
@@ -190,41 +189,56 @@ function App() {
     }
   };
 
+  const location = useLocation();
+  const [title, setTitle] = useState('');
+
+  useEffect(() => {
+    if (location.pathname === '/') {
+      setTitle('Todo List');
+    } else if (location.pathname === '/about') {
+      setTitle('About');
+    } else {
+      setTitle('Not Found');
+    }
+  }, [location]);
+
   return (
     <div className={styles.appContainer}>
       <div className={styles.appContent}>
-        {/* <h1>My Todos</h1> */}
-        <h1>
-          <span style={{ fontSize: '3rem', marginRight: '5px' }}>📒</span>
-          My Todos
-        </h1>
+        <Header title={title} />
 
-        <TodoForm onAddTodo={addTodo} isSaving={todoState.isSaving} />
-        <TodoList
-          todoList={todoState.todoList}
-          onCompleteTodo={completeTodo}
-          onUpdateTodo={updateTodo}
-          isLoading={todoState.isLoading}
-        />
-        <hr />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <TodosPage
+                todoState={todoState}
+                addTodo={addTodo}
+                completeTodo={completeTodo}
+                updateTodo={updateTodo}
+                setSortField={(value) =>
+                  dispatch({ type: todoActions.setSortField, sortField: value })
+                }
+                setSortDirection={(value) =>
+                  dispatch({
+                    type: todoActions.setSortDirection,
+                    sortDirection: value,
+                  })
+                }
+                setQueryString={(value) =>
+                  dispatch({
+                    type: todoActions.setQueryString,
+                    queryString: value,
+                  })
+                }
+              />
+            }
+          />
 
-        <TodosViewForm
-          sortField={todoState.sortField}
-          setSortField={(value) =>
-            dispatch({ type: todoActions.setSortField, sortField: value })
-          }
-          sortDirection={todoState.sortDirection}
-          setSortDirection={(value) =>
-            dispatch({
-              type: todoActions.setSortDirection,
-              sortDirection: value,
-            })
-          }
-          queryString={todoState.queryString}
-          setQueryString={(value) =>
-            dispatch({ type: todoActions.setQueryString, queryString: value })
-          }
-        />
+          <Route path="/about" element={<About />} />
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
 
         {todoState.errorMessage && (
           <div className={styles.errorBox}>
